@@ -87,12 +87,15 @@ fun main() {
                 if (i++ == 0) theclass = it.getter.call(someResponse)!!
             }
         }
+        val theclass2 = parentField.get(someResponse)
+        //println(theclass2)
 
         /*var classtype = parentField.get(type.javaClass.)*/
         type.declaredFields.forEach { subField ->
             subField.trySetAccessible()
             println(subField.name)
             println("HERE IT IS: " + subField.getLong(theclass).toString())
+            println("HERE IT IS: " + subField.getLong(theclass2).toString())
             //println("HERE IT IS: " + subField.getLong(SomeNestedObjects()).toString())
         }
 
