@@ -1,4 +1,13 @@
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.util.*
+import java.util.Arrays.toString
+import java.util.stream.Collectors
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.full.memberProperties
+
 
 class SomeAPICont{
     val `1`: SomeNestedObjects = SomeNestedObjects()
@@ -37,21 +46,77 @@ class SomeAPICont{
     val `34`: SomeNestedObjects = SomeNestedObjects()
     val `35`: SomeNestedObjects = SomeNestedObjects()
     val `36`: SomeNestedObjects = SomeNestedObjects()
+    val num: Int = 3
 }
 
 class SomeNestedObjects {
     val info: Long = 4L
 }
 
-fun main(){
+fun main() {
     val someResponse = SomeAPICont()
-    var critArray = Array<Long>(someResponse.javaClass.declaredFields.size){0}
-    someResponse.javaClass.declaredFields.forEachIndexed{i, field ->
-        println(field.name)
-        critArray[i] = field.name.toLong()
+//    println(someResponse.`1`.info)
+    var nestedResponse = someResponse.`1`
+    var field1 = nestedResponse.javaClass.getDeclaredField("info")
+    field1.trySetAccessible()
+    println(field1.getLong(nestedResponse))
+
+    var dataClass = someResponse.javaClass.declaredFields
+    dataClass.forEach { parentField ->
+        /*val type = parentField.type
+        val typeField = type.javaClass.declaredFields
+        type.declaredFields.forEach{
+            println(it.name)
+            val type = it.type*/
+        //parentField.trySetAccessible()
+        parentField.trySetAccessible()
+        var type = parentField.type
+        /*type::class.memberProperties.forEach{
+            if (it.visibility == KVisibility.PUBLIC){
+                println("name:" + it.name)
+            }
+        }*/
+
+        ////i got it
+        type.declaredFields.forEach { subField ->
+            subField.trySetAccessible()
+            println(subField.name)
+            println("HERE IT IS: " + subField.getLong(SomeNestedObjects()).toString())
+        }
+
+    }
+//    someResponse::class.memberProperties.forEach {
+//        if (it.visibility == KVisibility.PUBLIC) {
+//            println(it.name)
+//            println(it.getter.call(someResponse))
+//        }
+//    }
+    /*someResponse::class.declaredMemberProperties.forEach {
+        println(it.name)
+        val data = it.getter.call(someResponse)
+
+    }*/
+}
+
+
+
+
+/*    data.forEach{
+        println(it.toString())
     }
 
-    println(Arrays.toString(critArray))
+    var data2 = someResponse.javaClass.classes
+    println(data2.size)
+    data2.forEach{
+        println(it.getDeclaredField("info"))
+    }
 
+    someResponse.javaClass.declaredFields.forEachIndexed{i, field ->
+        critArray[i] = field.name.toLong()
+        var fieldClass = field.javaClass.classes
+        var data = fieldClass.javaClass.declaredFields
+        println(Arrays.toString(data))
+    }
 
-}
+    println(Arrays.toString(critArray))*/
+
