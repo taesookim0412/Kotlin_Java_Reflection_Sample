@@ -68,7 +68,7 @@ fun main() {
         if (it.visibility == KVisibility.PUBLIC) {
             if (i++ == 0) theclass = it.getter.call(someResponse)!!
             var tclass = theclass
-            theclass::class.declaredMemberProperties.forEach{
+            tclass::class.declaredMemberProperties.forEach{
                 //it.isAccessible = true
                 if (it.visibility == KVisibility.PUBLIC) {
                     println("NAME:" + it.name)
