@@ -7,6 +7,7 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.typeOf
 
 
 class SomeAPICont{
@@ -89,13 +90,23 @@ fun main() {
         }
         val theclass2 = parentField.get(someResponse)
         //println(theclass2)
+        var theClass3 = parentField.get(someResponse)
+        i=0
+        parentField.javaClass.declaredFields.forEach{
+            if (i++==0)theClass3 = it.get(someResponse)
+        }
+        println(theClass3)
 
         /*var classtype = parentField.get(type.javaClass.)*/
         type.declaredFields.forEach { subField ->
             subField.trySetAccessible()
             println(subField.name)
-            println("HERE IT IS: " + subField.getLong(theclass).toString())
-            println("HERE IT IS: " + subField.getLong(theclass2).toString())
+            println(theclass is SomeNestedObjects)
+            println(theclass2 is SomeNestedObjects)
+            println(theClass3 is SomeNestedObjects)
+            println("HERE IT IS: (1) " + subField.getLong(theclass).toString())
+            println("HERE IT IS: (2) " + subField.getLong(theclass2).toString())
+            println("HERE IT IS: (3) " + subField.getLong(theClass3).toString())
             //println("HERE IT IS: " + subField.getLong(SomeNestedObjects()).toString())
         }
 
