@@ -69,7 +69,7 @@ fun main() {
             println(it.name)
             val type = it.type*/
         //parentField.trySetAccessible()
-        parentField.trySetAccessible()
+        /*parentField.trySetAccessible()*/
         var type = parentField.type
         /*type::class.memberProperties.forEach{
             if (it.visibility == KVisibility.PUBLIC){
@@ -78,10 +78,22 @@ fun main() {
         }*/
 
         ////i got it
+
+        parentField.trySetAccessible()
+        var i=0
+        lateinit var theclass:Any
+        someResponse::class.memberProperties.forEach{
+            if (it.visibility == KVisibility.PUBLIC) {
+                if (i++ == 0) theclass = it.getter.call(someResponse)!!
+            }
+        }
+
+        /*var classtype = parentField.get(type.javaClass.)*/
         type.declaredFields.forEach { subField ->
             subField.trySetAccessible()
             println(subField.name)
-            println("HERE IT IS: " + subField.getLong(SomeNestedObjects()).toString())
+            println("HERE IT IS: " + subField.getLong(theclass).toString())
+            //println("HERE IT IS: " + subField.getLong(SomeNestedObjects()).toString())
         }
 
     }
