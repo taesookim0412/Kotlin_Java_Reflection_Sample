@@ -7,6 +7,7 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.typeOf
 
 
@@ -57,10 +58,32 @@ class SomeNestedObjects {
 fun main() {
     val someResponse = SomeAPICont()
 //    println(someResponse.`1`.info)
+
+
+    //Kotlin Method:
+    var i=0
+    lateinit var theclass:Any
+    someResponse::class.memberProperties.forEach{
+//        it.isAccessible = true
+        if (it.visibility == KVisibility.PUBLIC) {
+            if (i++ == 0) theclass = it.getter.call(someResponse)!!
+            var tclass = theclass
+            theclass::class.declaredMemberProperties.forEach{
+                //it.isAccessible = true
+                if (it.visibility == KVisibility.PUBLIC) {
+                    println("NAME:" + it.name)
+                    println(it.getter.call(tclass))
+                }
+            }
+        }
+    }
+
     var nestedResponse = someResponse.`1`
     var field1 = nestedResponse.javaClass.getDeclaredField("info")
     field1.trySetAccessible()
+
     println(field1.getLong(nestedResponse))
+
 
     var dataClass = someResponse.javaClass.declaredFields
     dataClass.forEach { parentField ->
@@ -79,15 +102,9 @@ fun main() {
         }*/
 
         ////i got it
-
         parentField.trySetAccessible()
-        var i=0
-        lateinit var theclass:Any
-        someResponse::class.memberProperties.forEach{
-            if (it.visibility == KVisibility.PUBLIC) {
-                if (i++ == 0) theclass = it.getter.call(someResponse)!!
-            }
-        }
+
+
         val theclass2 = parentField.get(someResponse)
         //println(theclass2)
         var theClass3 = parentField.get(someResponse)
