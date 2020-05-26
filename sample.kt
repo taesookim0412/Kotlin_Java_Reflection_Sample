@@ -55,7 +55,45 @@ class SomeNestedObjects {
     val info: Long = 4L
 }
 
-fun main() {
+
+
+
+
+fun main(){
+    var someResponse = SomeAPICont()
+    val time = System.currentTimeMillis()
+    someResponse::class.declaredMemberProperties.forEach{
+//        it.isAccessible = true
+        if (it.visibility == KVisibility.PUBLIC) {
+            //call2
+            val fieldClass = it.call(someResponse)!!
+            fieldClass::class.declaredMemberProperties.forEach{
+                //it.isAccessible = true
+                if (it.visibility == KVisibility.PUBLIC) {
+                    //call1
+                    println(it.call(fieldClass))
+                }
+            }
+        }
+    }
+
+    //Interestingly enough, runtime is about 690ms on a high end machine
+    //292ms on an Android device...............
+    //690ms may seem negligible but 300ms.... Seems rather low although it may produce errors.
+    //Would you rather sacrifice 300ms on the first initial boot, or add 50 lines of ugly code?
+    //Or you can prepopulate the database and not worry about the initial boot, and put the 50 lines of ugly code in some utility class...
+    // which is probably the correct answer..
+    //Reflection is nice but it has its drawbacks including usage of non-null data types..
+
+    println("Elapsed time: " + (System.currentTimeMillis() - time))
+}
+
+
+
+
+
+//Basically just notes/legacy code/java variant
+/*fun main() {
     val someResponse = SomeAPICont()
 //    println(someResponse.`1`.info)
 
@@ -63,16 +101,16 @@ fun main() {
     //Kotlin Method:
     var i=0
     lateinit var theclass:Any
-    someResponse::class.memberProperties.forEach{
+    someResponse::class.declaredMemberProperties.forEach{
 //        it.isAccessible = true
         if (it.visibility == KVisibility.PUBLIC) {
-            if (i++ == 0) theclass = it.getter.call(someResponse)!!
+            if (i++ == 0) theclass = it.call(someResponse)!!
             var tclass = theclass
             tclass::class.declaredMemberProperties.forEach{
                 //it.isAccessible = true
                 if (it.visibility == KVisibility.PUBLIC) {
                     println("NAME:" + it.name)
-                    println(it.getter.call(tclass))
+                    println(it.call(tclass))
                 }
             }
         }
@@ -87,19 +125,19 @@ fun main() {
 
     var dataClass = someResponse.javaClass.declaredFields
     dataClass.forEach { parentField ->
-        /*val type = parentField.type
+        *//*val type = parentField.type
         val typeField = type.javaClass.declaredFields
         type.declaredFields.forEach{
             println(it.name)
-            val type = it.type*/
+            val type = it.type*//*
         //parentField.trySetAccessible()
-        /*parentField.trySetAccessible()*/
+        *//*parentField.trySetAccessible()*//*
         var type = parentField.type
-        /*type::class.memberProperties.forEach{
+        *//*type::class.memberProperties.forEach{
             if (it.visibility == KVisibility.PUBLIC){
                 println("name:" + it.name)
             }
-        }*/
+        }*//*
 
         ////i got it
         parentField.trySetAccessible()
@@ -114,7 +152,7 @@ fun main() {
         }
         println(theClass3)
 
-        /*var classtype = parentField.get(type.javaClass.)*/
+        *//*var classtype = parentField.get(type.javaClass.)*//*
         type.declaredFields.forEach { subField ->
             subField.trySetAccessible()
             println(subField.name)
@@ -134,12 +172,12 @@ fun main() {
 //            println(it.getter.call(someResponse))
 //        }
 //    }
-    /*someResponse::class.declaredMemberProperties.forEach {
+    *//*someResponse::class.declaredMemberProperties.forEach {
         println(it.name)
         val data = it.getter.call(someResponse)
 
-    }*/
-}
+    }*//*
+}*/
 
 
 
